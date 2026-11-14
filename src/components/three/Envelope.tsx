@@ -1,27 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { paintStationery, waxShape, type Stationery } from "./stationery";
+import { BAKED, prepareBaked, waxShape } from "./stationery";
+import { ENVELOPE } from "./stationery-paint";
 
-// Envelope dimensions (world units)
-const W = 3.2;
-const H = 1.85;
-const FLAP_H = 1.35;
-// the card that slides out
-const CARD_W = 2.7;
-const CARD_H = 1.62;
+// Envelope and letter dimensions (world units)
+const { W, H, FLAP_H, CARD_W, CARD_H } = ENVELOPE;
 
-// Parchment envelope matching the letter (cream-gold centre, golden-brown edges), the wordmark printed on a wavy flap, sealed with
-// glossy black wax pressed with the "E". (Plain colours show for the first moment,
-// until the paper texture is painted.)
+// Parchment envelope matching the letter (cream-gold centre, golden-brown edges), the
+// wordmark printed on a wavy flap, sealed with glossy black wax pressed with the "E".
+// The paper and letter artwork are pre-baked images (public/hero/envelope/).
 const C = {
-  back: "#dcbf92",
-  pocket: "#f2deb8",
-  flap: "#f5e4c2",
-  card: "#f3dcae",
   wax: "#151414",
   waxRing: "#232120",
   waxCentre: "#1b1a19",
@@ -36,7 +28,16 @@ const seg = (p: number, a: number, b: number) => {
   return t * t * (3 - 2 * t); // smoothstep
 };
 
-export function Envelope({ progress, interactive }: { progress: RefObject<number>; interactive: boolean }) {
+export function Envelope({
+  progress,
+  interactive,
+  onReady,
+}: {
+  progress: RefObject<number>;
+  interactive: boolean;
+  /** Called once everything (including the images) has loaded, so the scene can fade in. */
+  onReady?: () => void;
+}) {
   const rig = useRef<THREE.Group>(null!);
   const env = useRef<THREE.Group>(null!);
   const flap = useRef<THREE.Group>(null!);
@@ -55,24 +56,18 @@ export function Envelope({ progress, interactive }: { progress: RefObject<number
   // shrink on narrow (phone) viewports so the envelope always fits
   const fit = Math.min(0.82, viewport.width / (W + 0.8));
 
-  const [wordmark, monogram] = useTexture(["/brand/wordmark-black.png", "/brand/monogram-white.png"], (loaded) => {
-    for (const t of [loaded].flat()) t.colorSpace = THREE.SRGBColorSpace;
+  // brand marks + the pre-baked paper and letter (about 60 KB of images in total)
+  const [wordmark, monogram, ...bakedTextures] = useTexture(["/brand/wordmark-black.png", "/brand/monogram-white.png", ...BAKED], (loaded) => {
+    const all = [loaded].flat();
+    for (const t of all) t.colorSpace = THREE.SRGBColorSpace;
+    prepareBaked(all.slice(2));
   });
+  const [backTex, pocketTex, flapTex, cardTex] = bakedTextures;
 
-  // cream paper textures, painted once the card's script font is ready
-  const [paper, setPaper] = useState<Stationery | null>(null);
+  // this only runs after the textures above have loaded (useTexture suspends until then)
   useEffect(() => {
-    let alive = true;
-    let made: Stationery | null = null;
-    paintStationery(W, H, FLAP_H).then((t) => {
-      made = t;
-      if (alive) setPaper(t);
-    });
-    return () => {
-      alive = false;
-      if (made) Object.values(made).forEach((t) => t.dispose());
-    };
-  }, []);
+    onReady?.();
+  }, [onReady]);
 
   // poured wax: an irregular disc with soft, rounded edges
   const waxGeo = useMemo(
@@ -155,11 +150,10 @@ export function Envelope({ progress, interactive }: { progress: RefObject<number
             <planeGeometry args={[CARD_W, CARD_H]} />
             {/* emissive keeps the card reading as bright paper, not grey, at any angle */}
             <meshStandardMaterial
-              key={paper ? "paper" : "plain"}
-              color={paper ? "#ffffff" : C.card}
-              map={paper?.card ?? null}
-              emissive={paper ? "#ffffff" : C.card}
-              emissiveMap={paper?.card ?? null}
+              color="#ffffff"
+              map={cardTex}
+              emissive="#ffffff"
+              emissiveMap={cardTex}
               emissiveIntensity={0.3}
               roughness={0.95}
               transparent
@@ -177,10 +171,10 @@ export function Envelope({ progress, interactive }: { progress: RefObject<number
         <group ref={env}>
           <mesh position={[0, 0, -0.02]}>
             <planeGeometry args={[W, H]} />
-            <meshStandardMaterial key={paper ? "p" : "c"} color={paper ? "#ffffff" : C.back} map={paper?.back ?? null} emissive="#ffffff" emissiveMap={paper?.back ?? null} emissiveIntensity={paper ? 0.22 : 0} roughness={0.95} side={THREE.DoubleSide} />
+            <meshStandardMaterial color="#ffffff" map={backTex} emissive="#ffffff" emissiveMap={backTex} emissiveIntensity={0.22} roughness={0.95} side={THREE.DoubleSide} />
           </mesh>
           <mesh geometry={pocketGeo} position={[0, 0, 0.02]}>
-            <meshStandardMaterial key={paper ? "p" : "c"} color={paper ? "#ffffff" : C.pocket} map={paper?.pocket ?? null} emissive="#ffffff" emissiveMap={paper?.pocket ?? null} emissiveIntensity={paper ? 0.22 : 0} roughness={0.95} />
+            <meshStandardMaterial color="#ffffff" map={pocketTex} emissive="#ffffff" emissiveMap={pocketTex} emissiveIntensity={0.22} roughness={0.95} />
           </mesh>
           <group ref={flap} position={[0, H / 2, 0.035]}>
             {/* soft shadow under the flap's wavy edge, so its outline reads on the paper */}
@@ -188,7 +182,7 @@ export function Envelope({ progress, interactive }: { progress: RefObject<number
               <meshBasicMaterial ref={flapShadow} color="#6a4a28" transparent opacity={0.16} depthWrite={false} />
             </mesh>
             <mesh geometry={flapGeo}>
-              <meshStandardMaterial key={paper ? "p" : "c"} color={paper ? "#ffffff" : C.flap} map={paper?.flap ?? null} emissive="#ffffff" emissiveMap={paper?.flap ?? null} emissiveIntensity={paper ? 0.22 : 0} roughness={0.92} side={THREE.DoubleSide} />
+              <meshStandardMaterial color="#ffffff" map={flapTex} emissive="#ffffff" emissiveMap={flapTex} emissiveIntensity={0.22} roughness={0.92} side={THREE.DoubleSide} />
             </mesh>
             {/* the wordmark, printed on the flap (only its front face is drawn, so it
                 disappears naturally as the flap folds back) */}

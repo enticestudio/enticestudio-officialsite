@@ -88,7 +88,19 @@ export const heroVideo = { mp4: "/hero/hero.mp4", webm: "/hero/hero.webm", mobil
 - **Film:** 8–15 seconds, loops seamlessly, slow and calm, warm light tones, no text or faces in close-up. A cream wash is laid over it so the headline stays readable.
 - **Files:** landscape 1920×1080 MP4 (H.264), ideally under 5 MB. Optional extras: a WebM version (smaller), a portrait 1080×1920 version for phones (`mobileMp4`), and a JPG of the first frame (`poster`), shown while it loads.
 - It's muted (browsers only autoplay muted video), pauses when scrolled past, and is skipped for visitors who prefer reduced motion.
+- **Loading:** the poster shows immediately; the film only starts downloading after the page has finished loading, so it never slows the first view. Phones (unless you add a `mobileMp4`) and data-saver / slow connections keep just the poster.
+- **Keep it small:** the current film is 4.6 MB. Re-exporting it at 1280×720 around 1–1.5 Mbps (e.g. HandBrake's "Web" presets, or Clipchamp/CapCut export at 720p) brings it to about 2 MB with no visible difference behind the cream wash.
 - Set `heroVideo` back to `null` for the plain cream background.
+
+## Hero envelope artwork
+
+The envelope's paper and the parchment letter are **pre-painted images** in `public/hero/envelope/` (about 60 KB in total), so visitors' devices don't have to paint them. The painting code is `src/components/three/stationery-paint.ts`. After changing it, regenerate the images with the dev server running:
+
+```bash
+npm run bake:envelope
+```
+
+The 3D shapes, wax seal and animation are in `src/components/three/Envelope.tsx`.
 
 ## Motion and accessibility
 

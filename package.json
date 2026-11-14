@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "covers": "node scripts/capture-covers.mjs"
+    "covers": "node scripts/capture-covers.mjs",
+    "bake:envelope": "node scripts/bake-envelope.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/Button";
@@ -106,16 +106,41 @@ export function Hero() {
  */
 function HeroVideo({ mp4, webm, mobileMp4, poster }: NonNullable<typeof heroVideo>) {
   const ref = useRef<HTMLVideoElement>(null);
+  // The poster shows straight away; the film itself only starts downloading once the
+  // page has finished loading, so it never slows down the headline or the envelope.
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    // Keep just the poster on data-saver / slow connections, and on phones unless a
+    // portrait version exists (a cropped landscape film isn't worth the mobile data).
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const slow = Boolean(conn?.saveData) || /2g|3g/.test(conn?.effectiveType ?? "");
+    const phone = window.matchMedia("(max-width: 767px)").matches && !mobileMp4;
+    if (slow || phone) return;
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const start = () => {
+      timer = setTimeout(() => setEnabled(true), 600);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      clearTimeout(timer);
+    };
+  }, [mobileMp4]);
+
   useEffect(() => {
     const video = ref.current;
-    if (!video) return;
+    if (!enabled || !video) return;
+    video.load(); // pick up the <source>s that were just added
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) video.play().catch(() => {}); // autoplay can be refused (e.g. data saver); the poster stays
       else video.pause();
     });
     io.observe(video);
     return () => io.disconnect();
-  }, []);
+  }, [enabled]);
 
   return (
     <>
@@ -124,15 +149,14 @@ function HeroVideo({ mp4, webm, mobileMp4, poster }: NonNullable<typeof heroVide
         aria-hidden
         className="absolute inset-0 h-full w-full object-cover"
         poster={poster}
-        autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
       >
-        {mobileMp4 && <source src={mobileMp4} type="video/mp4" media="(max-width: 767px)" />}
-        {webm && <source src={webm} type="video/webm" />}
-        <source src={mp4} type="video/mp4" />
+        {enabled && mobileMp4 && <source src={mobileMp4} type="video/mp4" media="(max-width: 767px)" />}
+        {enabled && webm && <source src={webm} type="video/webm" />}
+        {enabled && <source src={mp4} type="video/mp4" />}
       </video>
       <div
         aria-hidden

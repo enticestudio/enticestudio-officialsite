@@ -27,12 +27,11 @@ export default function HeroScene({ progress }: { progress: RefObject<number> })
   return (
     <div
       ref={wrap}
-      className={`absolute inset-0 transition-[opacity,transform] duration-[1400ms] ease-out ${
+      className={`absolute inset-0 transition-[opacity,transform] duration-[800ms] ease-out ${
         ready ? "opacity-100" : "translate-y-6 opacity-0"
       }`}
     >
       <Canvas
-        onCreated={() => requestAnimationFrame(() => setReady(true))}
         dpr={[1, 1.75]}
         frameloop={visible ? "always" : "never"}
         camera={{ position: [0, 0, 6.5], fov: 35 }}
@@ -44,7 +43,7 @@ export default function HeroScene({ progress }: { progress: RefObject<number> })
         <directionalLight position={[3, 4, 5]} intensity={1.5} />
         <directionalLight position={[-4, -1, 3]} intensity={0.4} color="#f3d9b5" />
         <Suspense fallback={null}>
-          <Envelope progress={progress} interactive={interactive} />
+          <Envelope progress={progress} interactive={interactive} onReady={() => requestAnimationFrame(() => setReady(true))} />
         </Suspense>
         <ContactShadows position={[0, -1.95, 0]} opacity={0.3} scale={9} blur={2.6} far={4} />
       </Canvas>
