@@ -1,5 +1,9 @@
+"use client";
+
 // Code-drawn ornaments, so every style looks finished before any artwork is added.
 // All use currentColor — set `color` / a text-colour class on the parent.
+
+import { motion } from "motion/react";
 
 /** Radial mandala: rings, petals and dots. */
 export function Mandala({ className = "" }: { className?: string }) {
@@ -68,6 +72,90 @@ export function Divider({ className = "" }: { className?: string }) {
       <path d="M80 0 L86 6 L80 12 L74 6 Z" fill="currentColor" stroke="none" />
       <circle cx="68" cy="6" r="1.4" fill="currentColor" stroke="none" />
       <circle cx="92" cy="6" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/**
+ * Art-deco frame: double border, stepped corner fans and sunbursts.
+ * `center` adds the diamond used around the monogram in the opening.
+ * `draw` animates the gold lines being drawn in.
+ */
+export function DecoFrame({ className = "", center = false, draw = false }: { className?: string; center?: boolean; draw?: boolean }) {
+  const corners: [number, number, number, number][] = [
+    [30, 30, 1, 1],
+    [360, 30, -1, 1],
+    [30, 814, 1, -1],
+    [360, 814, -1, -1],
+  ];
+  const paths: string[] = [
+    "M18 18 H372 V826 H18 Z",
+    "M30 30 H360 V814 H30 Z",
+  ];
+  for (const [x, y, sx, sy] of corners) {
+    for (const r of [18, 30, 42]) paths.push(`M${x + sx * r} ${y} A${r} ${r} 0 0 ${sx * sy > 0 ? 1 : 0} ${x} ${y + sy * r}`);
+    for (const a of [20, 45, 70]) {
+      const rad = (a * Math.PI) / 180;
+      paths.push(`M${x} ${y} L${x + sx * 42 * Math.cos(rad)} ${y + sy * 42 * Math.sin(rad)}`);
+    }
+  }
+  // sunbursts top and bottom
+  for (const [cy, dir] of [[30, 1], [814, -1]] as const) {
+    for (let a = 15; a <= 165; a += 15) {
+      const rad = (a * Math.PI) / 180;
+      const l = a % 30 === 0 ? 58 : 38;
+      paths.push(`M195 ${cy} L${195 + l * Math.cos(rad)} ${cy + dir * l * Math.sin(rad)}`);
+    }
+  }
+  if (center) {
+    paths.push("M195 332 L285 422 L195 512 L105 422 Z", "M195 350 L267 422 L195 494 L123 422 Z");
+    paths.push("M195 30 V318", "M195 526 V814");
+  }
+  return (
+    <svg viewBox="0 0 390 844" preserveAspectRatio="none" className={className} fill="none" stroke="currentColor" aria-hidden>
+      {paths.map((d, i) =>
+        draw ? (
+          <motion.path
+            key={i}
+            d={d}
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 1.6, delay: 0.1 + (i % 12) * 0.05, ease: "easeInOut" }}
+          />
+        ) : (
+          <path key={i} d={d} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        ),
+      )}
+    </svg>
+  );
+}
+
+/** Lotus flower. */
+export function Lotus({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 120" className={className} fill="none" stroke="currentColor" strokeWidth="1.1" aria-hidden>
+      <path d="M100 10 C 118 34, 118 70, 100 96 C 82 70, 82 34, 100 10 Z" fill="currentColor" fillOpacity="0.12" />
+      <path d="M100 96 C 70 86, 56 56, 60 30 C 82 40, 96 64, 100 96 Z" fill="currentColor" fillOpacity="0.08" />
+      <path d="M100 96 C 130 86, 144 56, 140 30 C 118 40, 104 64, 100 96 Z" fill="currentColor" fillOpacity="0.08" />
+      <path d="M100 96 C 60 96, 30 78, 18 56 C 46 54, 80 70, 100 96 Z" />
+      <path d="M100 96 C 140 96, 170 78, 182 56 C 154 54, 120 70, 100 96 Z" />
+      <path d="M30 104 Q100 118 170 104" />
+      <path d="M50 112 Q100 122 150 112" strokeOpacity="0.6" />
+      <circle cx="100" cy="4" r="2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Soft cartoon cloud. */
+export function Cloud({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 100" className={className} aria-hidden>
+      <path
+        d="M40 90 C 14 90, 8 62, 30 54 C 26 30, 56 18, 72 34 C 82 10, 124 8, 132 36 C 152 26, 182 40, 174 62 C 196 66, 192 92, 168 90 Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }

@@ -4,15 +4,51 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import type { Invitation } from "@/lib/invitations";
+import type { Block, Design } from "@/lib/invitations";
 import { Button } from "@/components/ui/Button";
+import { Price } from "@/components/currency/Currency";
+import { prices } from "@/lib/pricing";
+import { customDesignHref } from "@/lib/contact";
 
 // The invitation is rendered at a real phone size, then scaled to fit the window.
 const SCREEN_W = 390;
 const SCREEN_H = 844;
 const BEZEL = 12;
 
-const openingLabel = { envelope: "Wax-sealed envelope", curtain: "Velvet curtain reveal", doors: "Temple doors" };
+const openingLabel: Record<Design["opening"]["type"], string> = {
+  envelope: "Wax-sealed envelope",
+  curtain: "Velvet curtain reveal",
+  doors: "Temple doors",
+  deco: "Art-deco gold reveal",
+  scroll: "Unrolling parchment scroll",
+  giftbox: "Gift box & confetti burst",
+  balloons: "Balloons float away",
+  ticket: "Tear-away ticket",
+  iris: "Circular iris reveal",
+  loveletter: "Love letter with a heart seal",
+  ringbox: "Velvet ring box",
+  caps: "Graduation cap toss",
+  candle: "Tap to light a candle",
+};
+
+/** What a moment page includes, in plain words, from its sections. */
+const blockLabel: Partial<Record<Block["type"], string>> = {
+  timeline: "story timeline",
+  photos: "photos",
+  letter: "typed letter",
+  reasons: "flip cards",
+  question: "the big question",
+  countdown: "countdown",
+  cake: "candles to blow out",
+  messages: "messages",
+  details: "service details & directions",
+  guestbook: "condolence book",
+};
+const includes = (inv: Design) => {
+  if (inv.kind !== "moment") return "Countdown, events, map, calendar, RSVP";
+  const list = [...new Set(inv.blocks.map((b) => blockLabel[b.type]).filter(Boolean))] as string[];
+  return list.join(", ").replace(/^./, (c) => c.toUpperCase());
+};
 
 /**
  * Desktop: the live invitation inside a phone frame (an iframe of /i/<slug>, so it
@@ -24,9 +60,9 @@ export function PhoneViewer({
   prev,
   next,
 }: {
-  inv: Invitation;
-  prev: Invitation;
-  next: Invitation;
+  inv: Design;
+  prev: Design;
+  next: Design;
 }) {
   const router = useRouter();
   const stage = useRef<HTMLDivElement>(null);
@@ -55,14 +91,14 @@ export function PhoneViewer({
         <Link href="/demos" className="eyebrow text-stone hover:text-ink">
           ← All demos
         </Link>
-        <p className="eyebrow mt-10 text-champagne-deep">{inv.category}</p>
+        <p className="eyebrow mt-10 text-champagne-deep">{inv.category === "Moment" ? `Moments · ${inv.occasion}` : inv.category}</p>
         <h1 className="mt-3 font-display text-5xl leading-none lg:text-6xl">{inv.title}</h1>
         <p className="mt-4 max-w-xs text-ink-soft">{inv.style}.</p>
         <dl className="mt-8 space-y-3 text-sm">
           {[
             ["Opening", inv.opening.video ? "Cinematic video" : openingLabel[inv.opening.type]],
-            ["Music", inv.music ? "Starts when the guest taps" : "Optional"],
-            ["Includes", "Countdown, events, map, calendar, RSVP"],
+            ["Music", inv.music ? `Starts when the ${inv.kind === "moment" ? "page is opened" : "guest taps"}` : "Optional"],
+            ["Includes", includes(inv)],
           ].map(([k, v]) => (
             <div key={k} className="flex gap-4 border-t border-line pt-3">
               <dt className="w-20 shrink-0 text-stone">{k}</dt>
@@ -90,7 +126,7 @@ export function PhoneViewer({
               <iframe
                 key={reload}
                 src={src}
-                title={`${inv.title} demo invitation`}
+                title={`${inv.title} demo`}
                 className="block rounded-[2.5rem] bg-white"
                 style={{ width: SCREEN_W, height: SCREEN_H }}
                 allow="autoplay"
@@ -103,7 +139,16 @@ export function PhoneViewer({
       {/* right: actions */}
       <div className="order-3 flex flex-col gap-4 md:items-start">
         <Button href="/contact">Make it yours</Button>
-        <p className="text-sm text-stone">Your names, photos, events and music. From $249.</p>
+        <p className="text-sm text-stone">
+          {inv.kind === "moment" ? (
+            <>Your words, photos and song. From <Price value={prices.moment} />.</>
+          ) : (
+            <>Your names, photos, events and music. From <Price value={prices.rsvp} />.</>
+          )}
+        </p>
+        <Link href={customDesignHref} className="text-sm underline underline-offset-4 hover:text-champagne-deep">
+          Or have one designed from scratch →
+        </Link>
         <button onClick={() => setReload((n) => n + 1)} className="eyebrow mt-2 text-left text-stone hover:text-ink">
           ↻ Replay opening
         </button>

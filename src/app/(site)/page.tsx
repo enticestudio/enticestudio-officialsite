@@ -7,6 +7,7 @@ import { Packages } from "@/components/sections/Packages";
 import { Process } from "@/components/sections/Process";
 import { Faq } from "@/components/sections/Faq";
 import { Cta } from "@/components/sections/Cta";
+import { Connect } from "@/components/sections/Connect";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <Packages />
       <Process />
       <Faq />
+      <Connect />
       <Cta />
     </>
   );

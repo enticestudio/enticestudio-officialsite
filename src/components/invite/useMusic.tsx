@@ -20,8 +20,9 @@ export function useMusic(src?: string) {
     const from = a.volume;
     const t0 = performance.now();
     const step = (now: number) => {
-      const k = Math.min(1, (now - t0) / ms);
-      a.volume = from + (target - from) * k;
+      // rAF timestamps can be slightly earlier than t0, so clamp to [0, 1] on both ends
+      const k = Math.min(1, Math.max(0, (now - t0) / ms));
+      a.volume = Math.min(1, Math.max(0, from + (target - from) * k));
       if (k < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);

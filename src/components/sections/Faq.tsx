@@ -1,5 +1,15 @@
 import { faqs } from "@/lib/content";
 import { Reveal } from "@/components/motion/Reveal";
+import { Price } from "@/components/currency/Currency";
+import { prices } from "@/lib/pricing";
+
+/** Answers may contain {priceKey} placeholders, e.g. "{domainSetup}", shown in the visitor's currency. */
+function withPrices(text: string) {
+  return text.split(/(\{\w+\})/).map((part, i) => {
+    const key = part.match(/^\{(\w+)\}$/)?.[1] as keyof typeof prices | undefined;
+    return key && key in prices ? <Price key={i} value={prices[key]} /> : part;
+  });
+}
 
 export function Faq() {
   return (
@@ -22,7 +32,7 @@ export function Faq() {
                     <span className="absolute left-0 top-1/2 h-px w-4 rotate-90 bg-ink transition-transform duration-300 group-open:rotate-0" />
                   </span>
                 </summary>
-                <p className="mt-4 max-w-2xl text-ink-soft">{f.a}</p>
+                <p className="mt-4 max-w-2xl text-ink-soft">{withPrices(f.a)}</p>
               </details>
             </Reveal>
           ))}

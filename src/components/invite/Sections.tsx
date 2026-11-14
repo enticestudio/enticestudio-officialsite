@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Invitation } from "@/lib/invitations";
-import { ArchFrame, Divider, Mandala, Sprig } from "./Ornaments";
+import { ArchFrame, Cloud, DecoFrame, Divider, Lotus, Mandala, Sprig } from "./Ornaments";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -71,6 +71,39 @@ export function Hero({ inv, revealed }: { inv: Invitation; revealed: boolean }) 
           <>
             <Sprig className="absolute -left-6 -top-4 w-44 opacity-70" />
             <Sprig className="absolute -bottom-4 -right-6 w-44 rotate-180 opacity-70" />
+          </>
+        )}
+        {inv.ornament === "deco" && <DecoFrame className="absolute inset-0 h-full w-full opacity-80" />}
+        {inv.ornament === "lotus" && (
+          <>
+            <Lotus className="absolute left-1/2 top-[6%] w-36 -translate-x-1/2 opacity-80" />
+            <Lotus className="absolute bottom-[4%] left-1/2 w-24 -translate-x-1/2 rotate-180 opacity-50" />
+          </>
+        )}
+        {inv.ornament === "clouds" && (
+          <div className="text-white">
+            <Cloud className="absolute -left-10 top-[6%] w-48 animate-[drift_14s_ease-in-out_infinite_alternate] opacity-90" />
+            <Cloud className="absolute -right-12 top-[18%] w-40 animate-[drift_18s_ease-in-out_infinite_alternate-reverse] opacity-80" />
+            <Cloud className="absolute -left-8 bottom-[8%] w-36 animate-[drift_16s_ease-in-out_infinite_alternate-reverse] opacity-80" />
+            <Cloud className="absolute -right-6 bottom-[2%] w-52 animate-[drift_20s_ease-in-out_infinite_alternate] opacity-90" />
+          </div>
+        )}
+        {inv.ornament === "grid" && (
+          <>
+            <div
+              className="absolute inset-0 opacity-25"
+              style={{
+                backgroundImage:
+                  "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+                backgroundSize: "36px 36px",
+                maskImage: "radial-gradient(ellipse at 50% 45%, black 10%, transparent 70%)",
+                WebkitMaskImage: "radial-gradient(ellipse at 50% 45%, black 10%, transparent 70%)",
+              }}
+            />
+            {/* corner brackets */}
+            {["left-5 top-5 border-l border-t", "right-5 top-5 border-r border-t", "bottom-5 left-5 border-b border-l", "bottom-5 right-5 border-b border-r"].map((c) => (
+              <span key={c} className={`absolute size-8 border-current ${c}`} />
+            ))}
           </>
         )}
       </div>
@@ -188,7 +221,7 @@ export function Story({ inv }: { inv: Invitation }) {
 export function Events({ inv }: { inv: Invitation }) {
   return (
     <section className="px-6 py-20" style={{ background: "var(--inv-surface)" }}>
-      <Heading>{inv.events.length > 1 ? "The celebrations" : "The details"}</Heading>
+      <Heading>{inv.eventsTitle ?? (inv.events.length > 1 ? "The celebrations" : "The details")}</Heading>
       <div className="space-y-4">
         {inv.events.map((e, i) => (
           <In key={e.name} delay={i * 0.06}>

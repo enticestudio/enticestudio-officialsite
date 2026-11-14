@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Wordmark } from "./Logo";
+import { SocialIcons } from "@/components/contact/SocialIcons";
 
 const nav = [
   { href: "/weddings", label: "Weddings" },
   { href: "/celebrations", label: "Celebrations" },
   { href: "/business-events", label: "Business" },
+  { href: "/moments", label: "Moments" },
   { href: "/demos", label: "Demos" },
   { href: "/pricing", label: "Pricing" },
 ];
@@ -90,6 +92,9 @@ export function Header() {
                 </motion.div>
               ))}
             </nav>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mt-12">
+              <SocialIcons tone="light" />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

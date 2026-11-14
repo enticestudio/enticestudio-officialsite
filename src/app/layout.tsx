@@ -16,11 +16,11 @@ const sinhala = Noto_Serif_Sinhala({ subsets: ["sinhala"], variable: "--font-not
 
 export const metadata: Metadata = {
   title: {
-    default: "Entice Studio — Digital Invitations & Event Passes",
+    default: "Entice Studio — Invitations & Moments Worth Opening",
     template: "%s · Entice Studio",
   },
   description:
-    "Personalised invitation websites, RSVP pages and event passes designed and set up for you. Weddings, celebrations and business events.",
+    "Invitation websites with RSVP for weddings, celebrations and business events, plus personal pages for proposals, birthdays, graduations and tributes. Designed and set up for you, or made fully custom.",
 };
 
 export const viewport: Viewport = {

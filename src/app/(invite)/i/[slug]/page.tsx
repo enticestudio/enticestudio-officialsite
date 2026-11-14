@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { findInvitation, invitations } from "@/lib/invitations";
+import { findDesign, designs } from "@/lib/invitations";
 import { InvitationView } from "@/components/invite/InvitationView";
 
 /**
@@ -9,16 +9,16 @@ import { InvitationView } from "@/components/invite/InvitationView";
  * Demos live here today; real client invitations will use the same route.
  */
 export function generateStaticParams() {
-  return invitations.map((i) => ({ slug: i.slug }));
+  return designs.map((i) => ({ slug: i.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/i/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const inv = findInvitation(slug);
+  const inv = findDesign(slug);
   if (!inv) return {};
   return {
     title: { absolute: `${inv.names.join(" & ")} · ${inv.occasion}` },
-    description: `${inv.dateLabel} · ${inv.venue.name}. Tap to open your invitation.`,
+    description: inv.kind === "moment" ? "Made just for you. Tap to open." : `${inv.dateLabel} · ${inv.venue.name}. Tap to open your invitation.`,
     robots: { index: false, follow: false },
   };
 }
@@ -33,7 +33,7 @@ export default function Page({ params }: PageProps<"/i/[slug]">) {
 
 async function Invitation({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const inv = findInvitation(slug);
+  const inv = findDesign(slug);
   if (!inv) notFound();
   return <InvitationView inv={inv} />;
 }

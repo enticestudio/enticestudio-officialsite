@@ -2,19 +2,38 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import type { Invitation, OpeningType } from "@/lib/invitations";
+import type { Design, OpeningType } from "@/lib/invitations";
 import { TapIcon } from "./Ornaments";
+import { BalloonsOpening, DecoOpening, GiftBoxOpening, IrisOpening, ScrollOpening, TicketOpening } from "./MoreOpenings";
+import { CandleOpening, CapsOpening, RingBoxOpening } from "./MomentOpenings";
 
 const ease = [0.65, 0, 0.35, 1] as const;
 
 /** How long each opening runs before the gate fades away (seconds). */
-const DURATION: Record<OpeningType, number> = { envelope: 2.6, curtain: 2.3, doors: 2.4 };
+const DURATION: Record<OpeningType, number> = {
+  envelope: 2.6,
+  curtain: 2.3,
+  doors: 2.4,
+  deco: 2.4,
+  scroll: 2.9,
+  giftbox: 2.2,
+  balloons: 2.4,
+  ticket: 2.2,
+  iris: 2.2,
+  loveletter: 2.6,
+  ringbox: 2.6,
+  caps: 2.3,
+  candle: 2.9,
+};
 
-type OpeningProps = { inv: Invitation; started: boolean };
+/** Openings drawn on a dark background (light greeting text). */
+const DARK: OpeningType[] = ["curtain", "doors", "deco", "scroll", "ticket", "iris", "ringbox", "caps", "candle"];
+
+type OpeningProps = { inv: Design; started: boolean };
 
 /* ───────────────────────────── Envelope ───────────────────────────── */
 
-function EnvelopeOpening({ inv, started }: OpeningProps) {
+function EnvelopeOpening({ inv, started, heart = false }: OpeningProps & { heart?: boolean }) {
   const { theme } = inv;
   const [flapBehind, setFlapBehind] = useState(false);
 
@@ -78,7 +97,13 @@ function EnvelopeOpening({ inv, started }: OpeningProps) {
           animate={started ? { scale: 0, rotate: 90, opacity: 0 } : { scale: [1, 1.06, 1] }}
           transition={started ? { duration: 0.35 } : { duration: 2, repeat: Infinity }}
         >
-          {initials}
+          {heart ? (
+            <svg viewBox="0 0 24 24" className="size-7" fill="currentColor" aria-hidden>
+              <path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.1 5.4 3.1 1.8-2 3.3-3.1 5.4-3.1 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21Z" />
+            </svg>
+          ) : (
+            initials
+          )}
         </motion.div>
       </motion.div>
     </div>
@@ -273,14 +298,19 @@ export function Gate({
   guest,
   onStart,
   onDone,
+  autoStart = false,
 }: {
-  inv: Invitation;
+  inv: Design;
   guest: string | null;
   onStart: () => void;
   onDone: () => void;
+  /** Preview mode: open by itself once the cover is actually on screen (no tap needed). */
+  autoStart?: boolean;
 }) {
   const reduced = useReducedMotion();
+  const root = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(false);
+  const startedRef = useRef(false);
   const [mode, setMode] = useState<"video" | OpeningType>(inv.opening.video ? "video" : inv.opening.type);
   const fallbackType = inv.opening.type;
   // stable so the video effect doesn't restart on every render
@@ -293,22 +323,49 @@ export function Gate({
     return () => clearTimeout(t);
   }, [started, mode, reduced, onDone]);
 
-  const begin = () => {
-    if (started) return;
+  const begin = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
     setStarted(true);
     onStart();
-  };
+  }, [onStart]);
+
+  // Inside an iframe, IntersectionObserver measures against the *top* page's viewport,
+  // so the preview opens when the phone scrolls into view on the home page.
+  useEffect(() => {
+    if (!autoStart || !root.current) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.6) {
+          timer = setTimeout(begin, 700);
+          io.disconnect();
+        }
+      },
+      { threshold: [0, 0.6, 1] },
+    );
+    io.observe(root.current);
+    return () => {
+      io.disconnect();
+      clearTimeout(timer);
+    };
+  }, [autoStart, begin]);
 
   // Text colour over the closed cover
-  const light = mode === "curtain" || mode === "doors" || mode === "video";
+  const light = mode === "video" || DARK.includes(mode);
   const textColor = light ? "#fff8ee" : inv.theme.fg;
+  const greetingLine = guest
+    ? (inv.greeting ?? "Dear {guest},").replace("{guest}", guest)
+    : (inv.greetingDefault ?? "Dear Guest,");
 
   return (
     <motion.div
+      ref={root}
       className="fixed inset-0 z-50 cursor-pointer select-none overflow-hidden"
       role="button"
       tabIndex={0}
-      aria-label="Open the invitation"
+      aria-label={inv.kind === "moment" ? "Open" : "Open the invitation"}
+      data-gate=""
       onClick={begin}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && begin()}
       exit={{ opacity: 0 }}
@@ -318,14 +375,24 @@ export function Gate({
         <VideoOpening src={inv.opening.video} poster={inv.opening.poster} started={started} onEnd={onDone} onFail={switchToFallback} />
       )}
       {mode === "envelope" && <EnvelopeOpening inv={inv} started={started} />}
+      {mode === "loveletter" && <EnvelopeOpening inv={inv} started={started} heart />}
+      {mode === "ringbox" && <RingBoxOpening inv={inv} started={started} />}
+      {mode === "caps" && <CapsOpening inv={inv} started={started} />}
+      {mode === "candle" && <CandleOpening inv={inv} started={started} />}
       {mode === "curtain" && <CurtainOpening inv={inv} started={started} />}
       {mode === "doors" && <DoorsOpening inv={inv} started={started} />}
+      {mode === "deco" && <DecoOpening inv={inv} started={started} />}
+      {mode === "scroll" && <ScrollOpening inv={inv} started={started} />}
+      {mode === "giftbox" && <GiftBoxOpening inv={inv} started={started} />}
+      {mode === "balloons" && <BalloonsOpening inv={inv} started={started} />}
+      {mode === "ticket" && <TicketOpening inv={inv} started={started} />}
+      {mode === "iris" && <IrisOpening inv={inv} started={started} />}
 
       <AnimatePresence>
         {!started && (
           <motion.div
             className={`pointer-events-none absolute inset-x-0 z-10 flex flex-col items-center gap-3 px-6 text-center ${
-              mode === "envelope" || mode === "doors" ? "bottom-[13%]" : "top-1/2 -translate-y-1/2"
+              mode === "curtain" || mode === "video" ? "top-1/2 -translate-y-1/2" : "bottom-[10%]"
             }`}
             style={{ color: textColor, textShadow: light ? "0 2px 12px rgb(0 0 0 / 0.45)" : undefined }}
             initial={{ opacity: 0, y: 12 }}
@@ -337,8 +404,8 @@ export function Gate({
               <span className="absolute inset-0 animate-ping rounded-full border opacity-40" style={{ borderColor: textColor }} />
               <TapIcon className="size-8" />
             </span>
-            <p className="font-accent text-xl italic md:text-2xl">Dear {guest ?? "Guest"},</p>
-            <p className="eyebrow text-[0.6rem]">Tap to open</p>
+            <p className="font-accent text-xl italic md:text-2xl">{greetingLine}</p>
+            <p className="eyebrow text-[0.6rem]">{inv.tapLabel ?? "Tap to open"}</p>
           </motion.div>
         )}
       </AnimatePresence>

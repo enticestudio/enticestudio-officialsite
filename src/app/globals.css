@@ -134,6 +134,32 @@
   }
 }
 
+@keyframes bubble-rise {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate3d(18px, -55vh, 0);
+  }
+  100% {
+    transform: translate3d(-10px, -115vh, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(-12px);
+  }
+  to {
+    transform: translateX(16px);
+  }
+}
+
 @keyframes slow-spin {
   to {
     transform: rotate(360deg);

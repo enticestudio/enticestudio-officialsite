@@ -2,9 +2,10 @@
 
 import { useRef } from "react";
 import { motion, useMotionTemplate, useMotionValue, useSpring } from "motion/react";
-import { smallProducts, websitePackages, type Package } from "@/lib/content";
+import { momentPackages, smallProducts, websitePackages, type Package } from "@/lib/content";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/Button";
+import { BigPrice, CurrencyToggle, Price } from "@/components/currency/Currency";
 
 /** Card that tilts in 3D toward the cursor, with a soft light following it. */
 function TiltCard({ pkg }: { pkg: Package }) {
@@ -44,9 +45,8 @@ function TiltCard({ pkg }: { pkg: Package }) {
         {dark && <span className="eyebrow rounded-full bg-champagne px-3 py-1.5 text-[0.6rem] text-ink">Most chosen</span>}
       </div>
       <p className={`mt-3 ${dark ? "text-paper/70" : "text-ink-soft"}`}>{pkg.blurb}</p>
-      <p className="mt-8 font-display text-6xl">
-        <span className="align-top text-2xl">$</span>
-        {pkg.price}
+      <p className="mt-8 font-display text-[clamp(2.6rem,4.2vw,3.75rem)] leading-none">
+        <BigPrice value={pkg.price} />
       </p>
       <ul className={`mt-8 flex-1 space-y-3 text-sm ${dark ? "text-paper/85" : "text-ink-soft"}`}>
         {pkg.features.map((f) => (
@@ -74,7 +74,10 @@ export function Packages() {
             text="Simple, *honest* pricing."
           />
           <Reveal delay={0.1}>
-            <p className="mt-6 text-ink-soft">Prices in USD. Custom domains, extra languages and photo galleries are optional add-ons.</p>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <CurrencyToggle />
+              <p className="text-ink-soft">Custom domains, extra languages and photo galleries are optional add-ons.</p>
+            </div>
           </Reveal>
         </div>
 
@@ -92,7 +95,9 @@ export function Packages() {
               {smallProducts.map((p) => (
                 <div key={p.name}>
                   <p className="font-display text-xl">
-                    {p.name} <span className="font-sans text-base text-stone">· ${p.price}</span>
+                    {p.name} <span className="font-sans text-base text-stone">
+                      · <Price value={p.price} />
+                    </span>
                   </p>
                   <p className="text-sm text-ink-soft">{p.blurb}</p>
                 </div>
@@ -103,6 +108,38 @@ export function Packages() {
             </Button>
           </div>
         </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/** Prices for personal "moment" pages (Moments page and the pricing page). */
+export function MomentPackages({ tone = "paper" }: { tone?: "paper" | "ivory" }) {
+  return (
+    <section id="moments-pricing" className={`py-28 md:py-36 ${tone === "ivory" ? "bg-ivory" : ""}`}>
+      <div className="container-x">
+        <div className="mx-auto mb-14 max-w-2xl text-center">
+          <Reveal>
+            <p className="eyebrow text-stone">Moments pages</p>
+          </Reveal>
+          <SplitHeading
+            className="mt-5 font-display text-[clamp(2.2rem,4.6vw,4rem)] leading-[1]"
+            text="Small pages, *big* feelings."
+          />
+          <Reveal delay={0.1}>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <CurrencyToggle />
+              <p className="text-ink-soft">For proposals, Valentine&apos;s, birthdays, graduations and tributes. Memorial pages can stay online for longer; just ask.</p>
+            </div>
+          </Reveal>
+        </div>
+        <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">
+          {momentPackages.map((pkg, i) => (
+            <Reveal key={pkg.id} delay={i * 0.1} className="h-full">
+              <TiltCard pkg={pkg} />
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );

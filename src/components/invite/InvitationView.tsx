@@ -2,43 +2,49 @@
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import type { Invitation } from "@/lib/invitations";
+import type { Design } from "@/lib/invitations";
 import { Gate } from "./Openings";
 import { Particles } from "./Particles";
 import { useMusic } from "./useMusic";
 import { Closing, Countdown, Events, Gallery, Hero, Rsvp, SaveTheDate, Story, Venue } from "./Sections";
+import { MomentBlocks } from "./MomentBlocks";
 
 /**
- * A complete, working invitation rendered from data.
+ * A complete, working invitation (or personal "moment" page) rendered from data.
  * Flow: tap-to-open gate (+ music) → opening animation → scrollable invitation.
  * Personal greeting comes from the link: /i/<slug>?guest=Mr%20%26%20Mrs%20Silva
  */
-export function InvitationView({ inv }: { inv: Invitation }) {
+export function InvitationView({ inv }: { inv: Design }) {
   const [guest, setGuest] = useState<string | null>(null);
   const [stage, setStage] = useState<"closed" | "opening" | "open">("closed");
-  const music = useMusic(inv.music);
+  // ?preview=1 — used for the live phones on the home page: opens by itself, silently.
+  const [preview, setPreview] = useState(false);
+  const music = useMusic(preview ? undefined : inv.music);
+  const startMusic = music.start;
 
   useEffect(() => {
     // Read on the client so every invitation page can stay fully static.
-    const g = new URLSearchParams(window.location.search).get("guest");
+    const params = new URLSearchParams(window.location.search);
+    const g = params.get("guest");
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the URL
     if (g) setGuest(g.slice(0, 60));
+    if (params.get("preview") === "1") setPreview(true);
   }, []);
 
-  // No scrolling until the invitation has been opened.
+  // No scrolling until the invitation has been opened (and never in the home-page preview).
   useEffect(() => {
     const el = document.documentElement;
-    el.style.overflow = stage === "open" ? "" : "hidden";
+    el.style.overflow = stage === "open" && !preview ? "" : "hidden";
     if (stage !== "open") window.scrollTo(0, 0);
     return () => {
       el.style.overflow = "";
     };
-  }, [stage]);
+  }, [stage, preview]);
 
   const onStart = useCallback(() => {
-    music.start();
+    startMusic(); // no-op in preview mode (no track loaded)
     setStage("opening");
-  }, [music]);
+  }, [startMusic]);
   const onDone = useCallback(() => setStage("open"), []);
 
   const vars = {
@@ -53,20 +59,27 @@ export function InvitationView({ inv }: { inv: Invitation }) {
 
   return (
     <div style={vars} className="min-h-dvh">
-      {/* keep overscroll / outside-the-column areas on theme */}
-      <style>{`html,body{background:${inv.theme.bg}}`}</style>
+      {/* keep overscroll / outside-the-column areas on theme; hide the desktop scrollbar
+          (the page still scrolls — phones show no bar either, and it looked wrong in the phone frame) */}
+      <style>{`html,body{background:${inv.theme.bg}}html{scrollbar-width:none}html::-webkit-scrollbar{display:none}`}</style>
       {music.audio}
 
       <div className="relative mx-auto max-w-[480px] overflow-x-clip">
-        <Hero inv={inv} revealed={stage !== "closed"} />
-        <Countdown inv={inv} />
-        <Story inv={inv} />
-        <Events inv={inv} />
-        <Gallery inv={inv} />
-        <Venue inv={inv} />
-        <SaveTheDate inv={inv} />
-        <Rsvp inv={inv} guest={guest} />
-        <Closing inv={inv} />
+        {inv.kind === "moment" ? (
+          <MomentBlocks m={inv} revealed={stage !== "closed"} />
+        ) : (
+          <>
+            <Hero inv={inv} revealed={stage !== "closed"} />
+            <Countdown inv={inv} />
+            <Story inv={inv} />
+            <Events inv={inv} />
+            <Gallery inv={inv} />
+            <Venue inv={inv} />
+            <SaveTheDate inv={inv} />
+            <Rsvp inv={inv} guest={guest} />
+            <Closing inv={inv} />
+          </>
+        )}
       </div>
 
       {stage !== "closed" && <Particles kind={inv.particles} color={inv.theme.accent} />}
@@ -85,7 +98,7 @@ export function InvitationView({ inv }: { inv: Invitation }) {
         </motion.button>
       )}
 
-      <AnimatePresence>{stage !== "open" && <Gate inv={inv} guest={guest} onStart={onStart} onDone={onDone} />}</AnimatePresence>
+      <AnimatePresence>{stage !== "open" && <Gate inv={inv} guest={guest} onStart={onStart} onDone={onDone} autoStart={preview} />}</AnimatePresence>
     </div>
   );
 }

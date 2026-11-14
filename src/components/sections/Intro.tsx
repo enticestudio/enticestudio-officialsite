@@ -1,33 +1,10 @@
 import { Parallax } from "@/components/motion/Parallax";
 import { Reveal, SplitHeading } from "@/components/motion/Reveal";
-import { InvitePreview } from "@/components/ui/InvitePreview";
-import { demos } from "@/lib/content";
 
-/**
- * Statement section with floating "stationery" cards at different
- * parallax depths — near cards move faster than far ones.
- */
-const floaters = [
-  { demo: demos[1], cls: "left-[2%] top-[6%] w-32 md:w-44", speed: 0.5, rotate: -8 },
-  { demo: demos[4], cls: "right-[4%] top-[2%] w-28 md:w-40", speed: 0.25, rotate: 10 },
-  { demo: demos[3], cls: "left-[8%] bottom-[2%] w-28 md:w-36", speed: -0.2, rotate: 6 },
-  { demo: demos[0], cls: "right-[6%] bottom-[8%] w-32 md:w-48", speed: 0.65, rotate: -5 },
-];
-
+/** Statement section: the studio's promise, with a few soft gold dots drifting in parallax. */
 export function Intro() {
   return (
     <section className="relative overflow-hidden py-32 md:py-48">
-      {floaters.map((f, i) => (
-        <Parallax key={i} speed={f.speed} rotate={f.rotate} className={`absolute hidden sm:block ${f.cls}`}>
-          <div
-            className="aspect-[3/4] overflow-hidden rounded-md shadow-[0_30px_60px_-25px_rgb(14_14_14/0.45)]"
-            style={{ transform: `rotate(${f.rotate}deg)` }}
-          >
-            <InvitePreview demo={f.demo} compact />
-          </div>
-        </Parallax>
-      ))}
-
       {/* soft gold dots drifting at their own depth */}
       <Parallax speed={0.9} className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
         <span className="absolute left-[30%] top-[20%] size-2 rounded-full bg-champagne" />
