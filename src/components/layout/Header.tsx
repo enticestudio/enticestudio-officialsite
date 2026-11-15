@@ -33,7 +33,7 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        className={`fixed inset-x-0 top-[var(--season-bar,0px)] z-50 transition-all duration-500 ${
           scrolled ? "bg-paper/80 py-3 shadow-[0_1px_0_var(--line)] backdrop-blur-md" : "py-5"
         }`}
       >

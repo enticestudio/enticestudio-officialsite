@@ -6,7 +6,7 @@ import { Monogram } from "@/components/layout/Logo";
 
 export function Cta() {
   return (
-    <section className="relative overflow-hidden bg-ink py-32 text-paper md:py-48">
+    <section data-festive-dark className="relative overflow-hidden bg-ink py-32 text-paper md:py-48">
       <Parallax speed={-0.35} className="pointer-events-none absolute -right-10 top-1/2 -translate-y-1/2 opacity-[0.06] md:right-10">
         <Monogram tone="white" className="w-72 md:w-[28rem]" />
       </Parallax>

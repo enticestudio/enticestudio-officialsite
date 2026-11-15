@@ -106,8 +106,8 @@ export { designs as demos, type Design as Demo } from "./invitations";
  */
 export const heroVideo: { mp4: string; webm?: string; mobileMp4?: string; poster?: string } | null = { mp4: "/hero/hero.mp4", poster: "/hero/hero-poster1.jpg" };
 
-/** The six live phones in the home page gallery ("Six styles"). Swap slugs to feature others. */
-export const homeShowcaseSlugs = ["kandyan-gold", "ivory-envelope", "velvet-curtain", "the-question", "birthday", "grand-opening"];
+/** The live phones in the home page gallery, in order. Swap slugs to feature others. */
+export const homeShowcaseSlugs = ["christmas-wishes", "kandyan-gold", "ivory-envelope", "velvet-curtain", "the-question", "birthday", "grand-opening"];
 
 export type Service = {
   slug: "weddings" | "celebrations" | "business-events" | "moments";
@@ -168,7 +168,7 @@ export const services: Service[] = [
     kicker: "Made for one person",
     intro:
       "Personal pages that are the gift: a proposal, a Valentine's surprise, a birthday at midnight, a graduation to remember, or a gentle tribute to someone you've lost.",
-    occasions: ["Proposals", "Valentine's Day", "Birthday surprises", "Anniversaries", "Graduation & farewell", "Memorials & tributes"],
+    occasions: ["Proposals", "Valentine's Day", "Birthday surprises", "Christmas wishes", "Anniversaries", "Graduation & farewell", "Memorials & tributes"],
     from: prices.moment,
     priceNote: "ready in a day or two, on a private link.",
     category: "Moment",

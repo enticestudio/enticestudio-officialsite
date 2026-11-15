@@ -11,6 +11,79 @@
 import type { Moment } from "./invitations";
 
 export const moments: Moment[] = [
+  // ───────────── Christmas wishes ─────────────
+  {
+    kind: "moment",
+    slug: "christmas-wishes",
+    cover: "/demos/christmas-wishes/cover.jpg",
+    isNew: true,
+    title: "Christmas Wishes",
+    style: "A bauble opens on a Christmas letter, memories and a countdown",
+    category: "Moment",
+    occasion: "Merry Christmas",
+    theme: {
+      bg: "#0f2a1f",
+      surface: "#173a2b",
+      fg: "#f6ecd9",
+      accent: "#e3ba62",
+      onAccent: "#0f2a1f",
+      velvet: "#b3261e", // the bauble
+      namesFont: "script",
+    },
+    opening: { type: "ornament" },
+    greeting: "Merry Christmas, {guest}",
+    greetingDefault: "Merry Christmas",
+    tapLabel: "Tap to open your Christmas wish",
+    music: "/demos/placeholder-music.wav",
+    particles: "snow",
+    names: ["Amma & Thaththa"],
+    sampleGuest: "Amma & Thaththa",
+    blocks: [
+      {
+        type: "hero",
+        art: "tree",
+        eyebrow: "Merry Christmas",
+        title: "Amma & Thaththa",
+        subtitle: "From Melbourne, with all my love.",
+        note: "I can't be at the table this year, so I made you this instead.",
+      },
+      { type: "countdown", heading: "Until Christmas morning", to: "2026-12-25T00:00:00+05:30", doneText: "It's Christmas morning!" },
+      {
+        type: "letter",
+        heading: "A Christmas letter",
+        paragraphs: [
+          "Every December I think of our house in Negombo: the tree in the corner, Amma's Christmas cake and Thaththa pretending he didn't already eat a piece.",
+          "Thank you for every Christmas you made feel like magic. This year the magic is coming to you by phone.",
+        ],
+        signoff: "Your son, Shehan",
+      },
+      {
+        type: "photos",
+        heading: "Christmases we've shared",
+        items: [{ caption: "Midnight mass, 2015" }, { caption: "The crooked tree" }, { caption: "Amma's Christmas cake" }, { caption: "All of us, 2019" }],
+      },
+      {
+        type: "reasons",
+        heading: "What I'm thankful for",
+        items: [
+          "Amma's breudher on Christmas morning.",
+          "Thaththa's carols, always one note off.",
+          "A home that always smelled of cinnamon.",
+          "Phone calls that never feel long enough.",
+        ],
+      },
+      {
+        type: "messages",
+        heading: "Wishes from all of us",
+        items: [
+          { from: "Dilki", text: "Merry Christmas! Save us some cake. We'll be home in April." },
+          { from: "Little Ayaan, age 5", text: "Seeya, Achchi, I drew you a reindeer. It has six legs." },
+        ],
+      },
+      { type: "closing", text: "Merry Christmas and a blessed New Year.", signoff: "Shehan, Dilki & Ayaan" },
+    ],
+  },
+
   // ───────────── Proposal ─────────────
   {
     kind: "moment",

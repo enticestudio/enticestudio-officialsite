@@ -19,6 +19,8 @@ const C = {
   waxCentre: "#1b1a19",
   emboss: "#77726c",
 };
+/** Christmas-red sealing wax (see src/lib/season.ts). */
+const XMAS = { wax: "#8f1b20", waxRing: "#a8282c", waxCentre: "#7c161b", emboss: "#f2cdbd" };
 const SEAL_R = 0.3;
 
 const { clamp, lerp, damp } = THREE.MathUtils;
@@ -31,10 +33,13 @@ const seg = (p: number, a: number, b: number) => {
 export function Envelope({
   progress,
   interactive,
+  festive = false,
   onReady,
 }: {
   progress: RefObject<number>;
   interactive: boolean;
+  /** Christmas season: the wax seal turns red. */
+  festive?: boolean;
   /** Called once everything (including the images) has loaded, so the scene can fade in. */
   onReady?: () => void;
 }) {
@@ -193,20 +198,20 @@ export function Envelope({
             {/* glossy black wax seal pressed with the "E" */}
             <group ref={seal} position={[0, -FLAP_H + 0.08, 0.03]}>
               <mesh geometry={waxGeo} position={[0, 0, -0.012]}>
-                <meshStandardMaterial color={C.wax} roughness={0.16} metalness={0.25} />
+                <meshStandardMaterial color={festive ? XMAS.wax : C.wax} roughness={0.16} metalness={0.25} />
               </mesh>
               {/* raised ring and the slightly matte pressed centre */}
               <mesh position={[0, 0, 0.066]}>
                 <torusGeometry args={[SEAL_R * 0.66, 0.018, 12, 72]} />
-                <meshStandardMaterial color={C.waxRing} roughness={0.14} metalness={0.3} />
+                <meshStandardMaterial color={festive ? XMAS.waxRing : C.waxRing} roughness={0.14} metalness={0.3} />
               </mesh>
               <mesh position={[0, 0, 0.062]}>
                 <circleGeometry args={[SEAL_R * 0.64, 64]} />
-                <meshStandardMaterial color={C.waxCentre} roughness={0.55} metalness={0.1} />
+                <meshStandardMaterial color={festive ? XMAS.waxCentre : C.waxCentre} roughness={0.55} metalness={0.1} />
               </mesh>
               <mesh position={[0, 0.005, 0.066]}>
                 <planeGeometry args={[0.2, 0.2 * (604 / 518)]} />
-                <meshBasicMaterial map={monogram} color={C.emboss} transparent opacity={0.95} toneMapped={false} />
+                <meshBasicMaterial map={monogram} color={festive ? XMAS.emboss : C.emboss} transparent opacity={0.95} toneMapped={false} />
               </mesh>
             </group>
           </group>

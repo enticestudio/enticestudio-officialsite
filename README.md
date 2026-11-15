@@ -102,6 +102,15 @@ npm run bake:envelope
 
 The 3D shapes, wax seal and animation are in `src/components/three/Envelope.tsx`.
 
+## Seasonal theme (Christmas)
+
+One setting in `src/lib/season.ts` controls it:
+
+- `mode: "auto"` shows it every year between `from` and `to` (1 December to 1 January), then it disappears by itself.
+- `mode: "on"` always shows it (for previewing); `mode: "off"` never does.
+
+It adds a greeting bar above the menu (wording and link are in the same file; visitors can close it), gentle snowfall, gold stars, a warm evergreen glow on the dark sections and a red wax seal on the envelope (`redSeal`). It only affects the studio pages, never the invitations or Moments demos. The components are in `src/components/season/Season.tsx`; the small CSS touches are at the end of `src/app/globals.css`.
+
 ## Motion and accessibility
 
 - The 3D hero is loaded client-only (`next/dynamic`, `ssr: false`), fades in when ready, and stops rendering while off-screen.

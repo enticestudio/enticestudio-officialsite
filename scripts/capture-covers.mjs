@@ -44,6 +44,8 @@ for (const { slug, guest } of demos) {
   const url = `${BASE_URL}/i/${slug}?guest=${encodeURIComponent(guest)}`;
   await page.goto(url, { waitUntil: "networkidle0" });
   await page.waitForSelector("[data-gate]");
+  // hide the dev-server badge so it never ends up in a cover
+  await page.addStyleTag({ content: "nextjs-portal{display:none!important}" });
   await page.evaluate(() => document.fonts.ready);
   await new Promise((r) => setTimeout(r, 2600)); // let line-draws and the greeting fade-in finish
   const png = await page.screenshot({ type: "png" });

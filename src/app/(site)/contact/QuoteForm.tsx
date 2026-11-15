@@ -93,7 +93,7 @@ export function QuoteForm() {
             ))}
           </optgroup>
           <optgroup label="Moments (a page for one person)">
-            {["Proposal", "Valentine's / anniversary surprise", "Birthday surprise", "Graduation / farewell", "Memorial / tribute"].map((o) => (
+            {["Proposal", "Valentine's / anniversary surprise", "Birthday surprise", "Christmas / festive wishes", "Graduation / farewell", "Memorial / tribute"].map((o) => (
               <option key={o}>{o}</option>
             ))}
           </optgroup>

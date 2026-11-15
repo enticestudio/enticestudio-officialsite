@@ -8,6 +8,8 @@ import { LivePhone } from "@/components/demo/LivePhone";
 import { customDesignHref } from "@/lib/contact";
 
 // The six featured styles (edit homeShowcaseSlugs in lib/content.ts to change them)
+// "Seven styles": the heading follows however many are featured
+const countWord = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"][homeShowcaseSlugs.length] ?? String(homeShowcaseSlugs.length);
 const demos = homeShowcaseSlugs.map((slug) => allDemos.find((d) => d.slug === slug)!).filter(Boolean);
 
 /**
@@ -76,7 +78,7 @@ export function Showcase() {
         <div className="flex w-[78vw] shrink-0 snap-start flex-col justify-center md:w-[32vw]">
           <p className="eyebrow text-champagne">Live demos</p>
           <h2 className="mt-5 font-display text-[clamp(2.4rem,5vw,4.5rem)] leading-[0.98]">
-            Six styles, <span className="font-accent italic">ready</span> to make yours.
+            {countWord} styles, <span className="font-accent italic">ready</span> to make yours.
           </h2>
           <p className="mt-6 max-w-sm text-paper/70">
             Each one is a working page: open it on your phone and try it. Or bring your own idea and we&apos;ll design it from scratch.

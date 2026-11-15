@@ -7,6 +7,8 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { Button } from "@/components/ui/Button";
 import { InvitePreview, PhoneFrame } from "@/components/ui/InvitePreview";
 import { demos, heroVideo } from "@/lib/content";
+import { season } from "@/lib/season";
+import { useSeason } from "@/components/season/Season";
 const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
 
 /**
@@ -18,6 +20,7 @@ export function Hero() {
   const section = useRef<HTMLElement>(null);
   const progress = useRef(0);
   const reduced = useReducedMotion();
+  const festive = useSeason().active && season.redSeal;
 
   useGSAP(
     () => {
@@ -54,13 +57,13 @@ export function Hero() {
 
   return (
     <section ref={section} className="relative h-[320vh]" aria-label="Introduction">
-      <div className="sticky top-0 h-dvh overflow-hidden">
+      <div className="sticky top-[var(--season-bar,0px)] h-[calc(100dvh-var(--season-bar,0px))] overflow-hidden">
         <div
           aria-hidden
           className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,#fffdf9_0%,var(--paper)_45%,var(--ivory)_100%)]"
         />
         {heroVideo && <HeroVideo {...heroVideo} />}
-        <HeroScene progress={progress} />
+        <HeroScene progress={progress} festive={festive} />
 
         {/* Intro copy — real HTML so it paints instantly */}
         <div data-hero-intro className="pointer-events-none absolute inset-x-0 top-24 md:top-28">

@@ -7,9 +7,9 @@ export function Intro() {
     <section className="relative overflow-hidden py-32 md:py-48">
       {/* soft gold dots drifting at their own depth */}
       <Parallax speed={0.9} className="pointer-events-none absolute inset-0" style={{ zIndex: 0 }}>
-        <span className="absolute left-[30%] top-[20%] size-2 rounded-full bg-champagne" />
-        <span className="absolute left-[70%] top-[35%] size-3 rounded-full bg-champagne/70" />
-        <span className="absolute left-[55%] top-[80%] size-2 rounded-full bg-champagne/80" />
+        <span className="season-dot absolute left-[30%] top-[20%] size-2 rounded-full bg-champagne" />
+        <span className="season-dot absolute left-[70%] top-[35%] size-3 rounded-full bg-champagne/70" />
+        <span className="season-dot absolute left-[55%] top-[80%] size-2 rounded-full bg-champagne/80" />
       </Parallax>
 
       <div className="container-x relative z-10 text-center">

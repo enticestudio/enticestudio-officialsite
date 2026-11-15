@@ -38,6 +38,35 @@ export function Particles({ kind, color }: { kind: Design["particles"]; color: s
     );
   }
 
+  if (kind === "snow") {
+    return (
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-30 overflow-hidden">
+        {Array.from({ length: 22 }, (_, i) => {
+          const size = Math.round((3 + rand(i, 4) * 5) * 10) / 10;
+          return (
+            <span
+              key={i}
+              className="absolute -top-4 block animate-[snow-fall_linear_infinite]"
+              style={{ left: `${(rand(i, 1) * 100).toFixed(2)}%`, animationDuration: `${(10 + rand(i, 3) * 10).toFixed(2)}s`, animationDelay: `${(-rand(i, 2) * 20).toFixed(2)}s` }}
+            >
+              <span
+                className="block animate-[snow-sway_ease-in-out_infinite_alternate] rounded-full bg-white"
+                style={{
+                  width: size,
+                  height: size,
+                  opacity: Number((0.5 + rand(i, 5) * 0.45).toFixed(2)),
+                  boxShadow: i % 5 === 0 ? `0 0 8px ${color}` : "0 0 4px rgb(255 255 255 / 0.5)",
+                  filter: size > 6.5 ? "blur(0.6px)" : undefined,
+                  animationDuration: `${(3 + rand(i, 6) * 4).toFixed(2)}s`,
+                }}
+              />
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
+
   if (kind === "embers") {
     // slow, sparse points of warm light (memorial pages: calm, never busy)
     return (

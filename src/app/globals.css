@@ -166,6 +166,40 @@
   }
 }
 
+/* ── Seasonal theme (Christmas). Switched on by data-season on the site wrapper; see src/lib/season.ts ── */
+@keyframes snow-fall {
+  from {
+    transform: translate3d(0, -4vh, 0);
+  }
+  to {
+    transform: translate3d(0, 108vh, 0);
+  }
+}
+
+@keyframes snow-sway {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+
+/* the drifting gold dots become little four-point stars */
+[data-season="christmas"] .season-dot {
+  border-radius: 0;
+  scale: 2.4;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: twinkle 3.6s ease-in-out infinite;
+}
+
+/* a warm evergreen glow (with a touch of berry red) on the dark sections */
+[data-season="christmas"] [data-festive-dark] {
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgb(31 74 56 / 0.6), transparent 60%),
+    radial-gradient(ellipse at 90% 100%, rgb(122 31 31 / 0.22), transparent 55%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

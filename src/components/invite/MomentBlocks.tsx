@@ -123,6 +123,20 @@ function Art({ art, revealed }: { art: NonNullable<Extract<Block, { type: "hero"
           />
         </>
       )}
+      {art === "tree" && (
+        <>
+          <motion.path d="M32 12 L22 26 H27 L17 40 H24 L13 54 H51 L40 40 H47 L37 26 H42 Z M32 54 V60 M27 60 H37" {...common} {...draw} />
+          <motion.path
+            d="M32 3 L33.6 7.4 L38.2 7.6 L34.6 10.4 L35.9 14.8 L32 12.2 L28.1 14.8 L29.4 10.4 L25.8 7.6 L30.4 7.4 Z"
+            fill="currentColor"
+            stroke="none"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={revealed ? { opacity: [0.6, 1, 0.75, 1], scale: [0.95, 1.1, 1, 1.05] } : {}}
+            transition={{ duration: 2.4, repeat: Infinity, delay: 1.6 }}
+            style={{ transformOrigin: "32px 9px" }}
+          />
+        </>
+      )}
       {art === "cake" && (
         <>
           <motion.path d="M10 56 H54 M14 56 V40 H50 V56 M18 40 V30 H46 V40 M14 46 C18 50 22 42 26 46 C30 50 34 42 38 46 C42 50 46 42 50 46" {...common} {...draw} />

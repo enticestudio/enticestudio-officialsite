@@ -235,3 +235,112 @@ export function CandleOpening({ inv, started }: Props) {
     </div>
   );
 }
+
+/* ───────────── Christmas bauble: hangs from a pine branch, bursts into gold sparkles ───────────── */
+
+export function OrnamentOpening({ inv, started }: Props) {
+  const { bg, surface, accent } = inv.theme;
+  const red = inv.theme.velvet ?? "#b3261e";
+
+  // needles along a drooping pine branch across the top of the screen
+  const needles = Array.from({ length: 170 }, (_, i) => {
+    const t = i / 169;
+    const x = t * 100;
+    const y = 4 + Math.sin(t * Math.PI) * 9; // the branch sags in the middle
+    const side = i % 2 ? 1 : -1;
+    const angle = 90 + side * (20 + rand(i, 21) * 40) + (t - 0.5) * 30;
+    const len = 5 + rand(i, 22) * 5;
+    const rad = (angle * Math.PI) / 180;
+    return { x, y, x2: x + Math.cos(rad) * len, y2: y + Math.sin(rad) * len * 1.6, shade: i % 3 };
+  });
+  const greens = ["#2f6b4d", "#3f8a64", "#1f4a36"];
+
+  return (
+    <div className="absolute inset-0 overflow-hidden" style={{ background: `radial-gradient(circle at 50% 42%, ${surface}, ${bg} 72%)` }}>
+      {/* quiet snow in the night air */}
+      {Array.from({ length: 30 }, (_, i) => (
+        <span
+          key={i}
+          className="absolute block animate-[twinkle_ease-in-out_infinite] rounded-full bg-white"
+          style={{
+            left: `${(rand(i, 7) * 100).toFixed(2)}%`,
+            top: `${(rand(i, 8) * 100).toFixed(2)}%`,
+            width: i % 4 === 0 ? 3 : 2,
+            height: i % 4 === 0 ? 3 : 2,
+            animationDuration: `${(2.5 + rand(i, 9) * 3.5).toFixed(2)}s`,
+            animationDelay: `${(-rand(i, 6) * 5).toFixed(2)}s`,
+          }}
+        />
+      ))}
+
+      {/* pine branch */}
+      <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="absolute inset-x-0 top-0 h-[22%] w-full" aria-hidden>
+        <path d="M0 4 Q50 22 100 4" fill="none" stroke="#5b3d24" strokeWidth="0.9" />
+        {needles.map((n, i) => (
+          <line key={i} x1={n.x.toFixed(2)} y1={n.y.toFixed(2)} x2={n.x2.toFixed(2)} y2={n.y2.toFixed(2)} stroke={greens[n.shade]} strokeWidth="0.8" strokeLinecap="round" />
+        ))}
+      </svg>
+
+      {/* string + bauble, swinging gently from the branch */}
+      <motion.div
+        className="absolute left-1/2 top-[11%] flex origin-top -translate-x-1/2 flex-col items-center"
+        animate={started ? { rotate: [0, -7, 6, 0] } : { rotate: [-4, 4, -4] }}
+        transition={started ? { duration: 0.5 } : { duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span className="block h-[17dvh] w-px" style={{ background: accent }} />
+        <motion.div
+          className="flex flex-col items-center"
+          animate={started ? { scale: [1, 0.92, 1.35], opacity: [1, 1, 0] } : { scale: 1, opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.45, times: [0, 0.35, 1], ease }}
+        >
+          {/* cap and loop */}
+          <span className="block size-3 rounded-full border-2" style={{ borderColor: accent }} />
+          <span className="-mt-0.5 block h-3 w-7 rounded-t-sm" style={{ background: `linear-gradient(90deg, color-mix(in oklab, ${accent} 60%, #5a3a10), ${accent}, color-mix(in oklab, ${accent} 60%, #5a3a10))` }} />
+          {/* the bauble */}
+          <div
+            className="relative -mt-px size-40 rounded-full shadow-[0_30px_50px_-20px_rgb(0_0_0/0.7)]"
+            style={{ background: `radial-gradient(circle at 34% 28%, color-mix(in oklab, ${red} 55%, white) 0%, ${red} 38%, color-mix(in oklab, ${red} 55%, black) 100%)` }}
+          >
+            {/* gold bands and a star */}
+            <span className="absolute inset-x-0 top-[38%] h-px opacity-80" style={{ background: accent }} />
+            <span className="absolute inset-x-0 top-[62%] h-px opacity-80" style={{ background: accent }} />
+            <svg viewBox="0 0 24 24" className="absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-1/2" style={{ color: accent }} aria-hidden>
+              <path fill="currentColor" d="M12 2 L14.2 9.2 L21.5 9.5 L15.7 14 L17.8 21 L12 16.8 L6.2 21 L8.3 14 L2.5 9.5 L9.8 9.2 Z" />
+            </svg>
+            {/* glassy highlight */}
+            <span className="absolute left-[18%] top-[14%] h-8 w-5 -rotate-[30deg] rounded-full bg-white/45 blur-[3px]" />
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* warm light and a burst of gold sparkles when it opens */}
+      <motion.div
+        className="absolute left-1/2 top-[48%] size-44 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ background: `radial-gradient(circle, color-mix(in oklab, ${accent} 80%, white), transparent 68%)` }}
+        initial={{ opacity: 0, scale: 0.3 }}
+        animate={started ? { opacity: [0, 0.9, 0.5], scale: [0.3, 2.4, 8] } : { opacity: 0, scale: 0.3 }}
+        transition={{ duration: 1.7, delay: 0.75, times: [0, 0.4, 1], ease }}
+      />
+      {started &&
+        Array.from({ length: 34 }, (_, i) => {
+          const a = rand(i, 11) * Math.PI * 2;
+          const d = 110 + rand(i, 12) * 230;
+          return (
+            <motion.span
+              key={i}
+              className="absolute left-1/2 top-[48%] block"
+              style={{
+                width: 8,
+                height: 8,
+                background: i % 4 === 0 ? "#ffffff" : accent,
+                clipPath: "polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%)",
+              }}
+              initial={{ x: 0, y: 0, opacity: 0, scale: 0.4, rotate: 0 }}
+              animate={{ x: Math.cos(a) * d, y: Math.sin(a) * d, opacity: [0, 1, 1, 0], scale: [0.4, 1.6, 1, 0.6], rotate: 180 }}
+              transition={{ duration: 1.5, delay: 0.8 + rand(i, 13) * 0.15, ease: "easeOut" }}
+            />
+          );
+        })}
+    </div>
+  );
+}

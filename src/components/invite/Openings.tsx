@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Design, OpeningType } from "@/lib/invitations";
 import { TapIcon } from "./Ornaments";
 import { BalloonsOpening, DecoOpening, GiftBoxOpening, IrisOpening, ScrollOpening, TicketOpening } from "./MoreOpenings";
-import { CandleOpening, CapsOpening, RingBoxOpening } from "./MomentOpenings";
+import { CandleOpening, CapsOpening, OrnamentOpening, RingBoxOpening } from "./MomentOpenings";
 
 const ease = [0.65, 0, 0.35, 1] as const;
 
@@ -24,10 +24,11 @@ const DURATION: Record<OpeningType, number> = {
   ringbox: 2.6,
   caps: 2.3,
   candle: 2.9,
+  ornament: 2.4,
 };
 
 /** Openings drawn on a dark background (light greeting text). */
-const DARK: OpeningType[] = ["curtain", "doors", "deco", "scroll", "ticket", "iris", "ringbox", "caps", "candle"];
+const DARK: OpeningType[] = ["curtain", "doors", "deco", "scroll", "ticket", "iris", "ringbox", "caps", "candle", "ornament"];
 
 type OpeningProps = { inv: Design; started: boolean };
 
@@ -379,6 +380,7 @@ export function Gate({
       {mode === "ringbox" && <RingBoxOpening inv={inv} started={started} />}
       {mode === "caps" && <CapsOpening inv={inv} started={started} />}
       {mode === "candle" && <CandleOpening inv={inv} started={started} />}
+      {mode === "ornament" && <OrnamentOpening inv={inv} started={started} />}
       {mode === "curtain" && <CurtainOpening inv={inv} started={started} />}
       {mode === "doors" && <DoorsOpening inv={inv} started={started} />}
       {mode === "deco" && <DecoOpening inv={inv} started={started} />}

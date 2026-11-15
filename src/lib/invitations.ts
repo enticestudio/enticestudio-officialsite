@@ -24,7 +24,8 @@ export type OpeningType =
   | "loveletter" // envelope with a heart seal
   | "ringbox" // velvet ring box opens
   | "caps" // graduation caps thrown into the air
-  | "candle"; // tap to light a candle
+  | "candle" // tap to light a candle
+  | "ornament"; // a Christmas bauble bursts into gold sparkles
 
 export type Category = "Wedding" | "Celebration" | "Business" | "Moment";
 
@@ -65,7 +66,7 @@ type DesignBase = {
 
   /** Optional licensed music track. Starts on the first tap. */
   music?: string;
-  particles: "petals" | "sparkles" | "confetti" | "bubbles" | "hearts" | "embers" | "none";
+  particles: "petals" | "sparkles" | "confetti" | "bubbles" | "hearts" | "embers" | "snow" | "none";
   names: string[]; // 1 name for birthdays/businesses/moments, 2 for couples
   /** Sample name used in the phone demo. */
   sampleGuest: string;
@@ -117,7 +118,7 @@ export type Design = Invitation | Moment;
 
 /** Sections a moment page can be built from. Each renders in src/components/invite/MomentBlocks.tsx. */
 export type Block =
-  | { type: "hero"; eyebrow: string; title: string; subtitle?: string; note?: string; art?: "ring" | "heart" | "cap" | "candle" | "cake" }
+  | { type: "hero"; eyebrow: string; title: string; subtitle?: string; note?: string; art?: "ring" | "heart" | "cap" | "candle" | "cake" | "tree" }
   | { type: "timeline"; heading: string; items: { date: string; title: string; text: string }[] }
   | { type: "photos"; heading: string; items: { src?: string; caption: string }[] }
   | { type: "letter"; heading: string; paragraphs: string[]; signoff: string }

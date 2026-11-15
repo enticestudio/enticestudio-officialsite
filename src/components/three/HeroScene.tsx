@@ -10,7 +10,7 @@ import { Envelope } from "./Envelope";
  * so three.js never blocks the first paint of the HTML headline.
  * Rendering pauses whenever the hero is off-screen.
  */
-export default function HeroScene({ progress }: { progress: RefObject<number> }) {
+export default function HeroScene({ progress, festive = false }: { progress: RefObject<number>; festive?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
   const [interactive, setInteractive] = useState(false);
@@ -43,7 +43,7 @@ export default function HeroScene({ progress }: { progress: RefObject<number> })
         <directionalLight position={[3, 4, 5]} intensity={1.5} />
         <directionalLight position={[-4, -1, 3]} intensity={0.4} color="#f3d9b5" />
         <Suspense fallback={null}>
-          <Envelope progress={progress} interactive={interactive} onReady={() => requestAnimationFrame(() => setReady(true))} />
+          <Envelope progress={progress} interactive={interactive} festive={festive} onReady={() => requestAnimationFrame(() => setReady(true))} />
         </Suspense>
         <ContactShadows position={[0, -1.95, 0]} opacity={0.3} scale={9} blur={2.6} far={4} />
       </Canvas>

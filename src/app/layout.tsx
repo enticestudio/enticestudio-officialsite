@@ -16,7 +16,7 @@ const sinhala = Noto_Serif_Sinhala({ subsets: ["sinhala"], variable: "--font-not
 
 export const metadata: Metadata = {
   title: {
-    default: "Entice Studio — Invitations & Moments Worth Opening",
+    default: "Entice Studio - Invitations & Moments Worth Opening",
     template: "%s · Entice Studio",
   },
   description:

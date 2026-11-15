@@ -29,6 +29,7 @@ const openingLabel: Record<Design["opening"]["type"], string> = {
   ringbox: "Velvet ring box",
   caps: "Graduation cap toss",
   candle: "Tap to light a candle",
+  ornament: "Christmas bauble & gold sparkles",
 };
 
 /** What a moment page includes, in plain words, from its sections. */

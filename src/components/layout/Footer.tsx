@@ -29,7 +29,7 @@ const link = "inline-flex items-center gap-2.5 text-paper/85 transition-colors h
 export function Footer() {
   const wa = whatsappLink();
   return (
-    <footer className="bg-ink text-paper">
+    <footer data-festive-dark className="bg-ink text-paper">
       <div className="container-x grid grid-cols-2 gap-x-8 gap-y-14 py-20 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="col-span-2 space-y-6 md:col-span-1">
           <Wordmark tone="white" className="w-44" />
